@@ -87,6 +87,8 @@ otbr_install()
 
     if with MUD_MANAGER; then
         otbr_options+=("-DOTBR_MUD_MANAGER=ON")
+    else
+        otbr_options+=("-DOTBR_MUD_MANAGER=OFF")
     fi
 
     if with BORDER_ROUTING; then

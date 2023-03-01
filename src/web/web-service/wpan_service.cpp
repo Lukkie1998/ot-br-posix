@@ -332,6 +332,12 @@ std::string WpanService::HandleStatusRequest()
     otbr::Web::OpenThreadClient client(mIfName);
     char                       *rval;
 
+#if OTBR_ENABLE_MUD_MANAGER
+        networkInfo["MUD Manager"] = "enabled";
+#else
+        networkInfo["MUD Manager"] = "disabled";
+#endif
+
     networkInfo["WPAN service"] = "uninitialized";
     VerifyOrExit(client.Connect(), ret = kWpanStatus_SetFailed);
 
