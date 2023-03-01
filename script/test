@@ -130,6 +130,7 @@ do_build()
         "-DOTBR_DBUS=ON"
         "-DOTBR_FEATURE_FLAGS=ON"
         "-DOTBR_WEB=ON"
+        "-DOTBR_MUD_MANAGER=ON"
         "-DOTBR_UNSECURE_JOIN=ON"
         "-DOTBR_TREL=ON"
         ${otbr_options[@]+"${otbr_options[@]}"}

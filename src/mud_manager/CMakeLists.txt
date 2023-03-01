@@ -1,6 +1,5 @@
-#!/bin/bash
 #
-#  Copyright (c) 2018, The OpenThread Authors.
+#  Copyright (c) 2021, The OpenThread Authors.
 #  All rights reserved.
 #
 #  Redistribution and use in source and binary forms, with or without
@@ -26,26 +25,3 @@
 #  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 #  POSSIBILITY OF SUCH DAMAGE.
 #
-
-set -euxo pipefail
-
-main()
-{
-    SCAN_TMPDIR=./scan-tmp
-    (mkdir -p scan-build \
-        && cd scan-build \
-        && scan-build cmake -GNinja \
-            -DBUILD_TESTING=OFF \
-            -DCMAKE_CXX_COMPILER=clang++ \
-            -DCMAKE_C_COMPILER=clang \
-            -DOTBR_DBUS=ON \
-            -DOTBR_FEATURE_FLAGS=ON \
-            -DOTBR_WEB=ON \
-            -DOTBR_REST=ON \
-            -DOTBR_MUD_MANAGER=ON \
-            .. \
-        && scan-build -o "${SCAN_TMPDIR}" -analyze-headers -v ninja)
-    ! (grep "^<!-- BUGFILE $(pwd)" "${SCAN_TMPDIR}"/*/report-*.html | grep -v 'third_party') && echo 'Success'
-}
-
-main "$@"

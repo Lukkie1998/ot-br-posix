@@ -103,6 +103,10 @@ if(OTBR_TREL)
     target_compile_definitions(otbr-config INTERFACE OTBR_ENABLE_TREL=1)
 endif()
 
+option(OTBR_MUD_MANAGER "Enable Manufacturer Usage Description Manager." OFF)
+if(OTBR_MUD_MANAGER)
+    target_compile_definitions(otbr-config INTERFACE OTBR_ENABLE_MUD_MANAGER=1)
+endif()
 
 option(OTBR_WEB "Enable Web GUI" OFF)
 
