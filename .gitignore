@@ -114,6 +114,9 @@ cmake-build-*/**
 *.data
 *.flash
 
+# VS Code
+.vscode/
+
 src/client/dbus/dbus-client-test
 
 *.gcno

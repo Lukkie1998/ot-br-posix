@@ -113,6 +113,8 @@ install_packages_apt()
 
     # protobuf compiler
     sudo apt-get install -y libprotobuf-dev protobuf-compiler
+
+    # TODO add install instructions for CURL
 }
 
 install_packages_opkg()

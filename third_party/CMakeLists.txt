@@ -31,3 +31,8 @@ if(OTBR_REST)
     add_subdirectory(cJSON)
     add_subdirectory(http-parser)
 endif()
+
+if(OTBR_MUD_MANAGER)
+    add_subdirectory(rapidjson)
+    add_subdirectory(curlcpp)
+endif()

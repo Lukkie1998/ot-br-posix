@@ -44,6 +44,9 @@
 #include "common/byteswap.hpp"
 #include "common/code_utils.hpp"
 
+
+#include "mud_manager/mud_manager.hpp"
+
 namespace otbr {
 namespace Web {
 
@@ -333,11 +336,13 @@ std::string WpanService::HandleStatusRequest()
     char                       *rval;
 
 #if OTBR_ENABLE_MUD_MANAGER
-        networkInfo["MUD Manager"] = "enabled";
+    otbr::MUD::MudManager manager = otbr::MUD::MudManager();
+    networkInfo["MUD Manager"] = "enabled";
+    
+    networkInfo["MUD Content"] = manager.GetFileContents();
 #else
-        networkInfo["MUD Manager"] = "disabled";
+    networkInfo["MUD Manager"] = "disabled";
 #endif
-
     networkInfo["WPAN service"] = "uninitialized";
     VerifyOrExit(client.Connect(), ret = kWpanStatus_SetFailed);
 

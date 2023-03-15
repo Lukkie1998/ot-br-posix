@@ -57,6 +57,7 @@ target_link_libraries(otbr-web PRIVATE
     ${JSONCPP_LIBRARIES}
     otbr-common
     otbr-utils
+    otbr-mud-manager
     openthread-ftd
     openthread-posix
     mbedtls

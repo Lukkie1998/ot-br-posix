@@ -8,6 +8,9 @@
 [submodule "third_party/http-parser/repo"]
 	path = third_party/http-parser/repo
 	url = https://github.com/nodejs/http-parser.git
-[submodule "third_party/cpp-httplib/repo"]
-	path = third_party/cpp-httplib/repo
-	url = https://github.com/yhirose/cpp-httplib.git
+[submodule "third_party/curlcpp/repo"]
+	path = third_party/curlcpp/repo
+	url = https://github.com/JosephP91/curlcpp.git
+[submodule "third_party/rapidjson/repo"]
+	path = third_party/rapidjson/repo
+	url = https://github.com/Tencent/rapidjson.git

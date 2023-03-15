@@ -26,11 +26,5 @@
 #  POSSIBILITY OF SUCH DAMAGE.
 #
 
-add_library(otbr-mud-manager
-    mud_manager.cpp
-)
-
-target_link_libraries(otbr-mud-manager PRIVATE
-    otbr-common
-    curlcpp
-)
+ADD_SUBDIRECTORY(repo) # Change `ext/curlcpp` to a directory according to your setup
+INCLUDE_DIRECTORIES(${CURLCPP_SOURCE_DIR}/include)
