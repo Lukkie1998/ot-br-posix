@@ -191,7 +191,7 @@ namespace otbr {
          Value& acls = mud_file_parsed["ietf-access-control-list:acls"]["acl"];
 
          for (auto& acl : acls.GetArray()) {
-            ACL mACL;
+            ACL mACL = ACL();
             mACL.name = acl["name"].GetString();
             otbrLogInfo("Processing ACL: %s", mACL.name);
             mACL.type = acl["type"].GetString();
@@ -199,14 +199,14 @@ namespace otbr {
             Value& aces = acl["aces"]["ace"];
 
             for (auto& ace : aces.GetArray()) {
-               ACE mACE;
+               ACE mACE = ACE();
 
                mACE.name = ace["name"].GetString();
                mACE.forwarding = ace["actions"]["forwarding"].GetString();
 
                otbrLogInfo("Processing ACE: %s", mACE.name);
 
-               Match mMatch;
+               Match mMatch = Match();
 
                Value& matches = ace["matches"];
 
@@ -315,6 +315,8 @@ namespace otbr {
   
             }
 
+            otbrLogInfo("ACL: %s | ACE Count: %d", mACL.name, mACL.aces.size());
+
             for (const char* a : m.from_device_policies) {
                if ( strcmp(a, mACL.name) == 0 ) {
                   otbrLogInfo("Adding from device policy: %s", mACL.name);
@@ -328,6 +330,8 @@ namespace otbr {
                   m.to_device_acls.push_back(mACL);
                }
             }
+
+            
          }
 
          otbrLogInfo("Converted MUD File to MUD Struct.");
@@ -445,18 +449,26 @@ namespace otbr {
          std::string policy_name_out = "0011223344556677_OUTPUT";
          std::ofstream outfile ("/mud/acl.sh");
 
-         outfile << "#/bin/bash" << endl;
+         outfile << "#!/bin/bash" << endl;
+         outfile << endl;
+         outfile << "if [[ $1 == \"down\" ]]; then" << endl;
+         outfile << "ip6tables -D INPUT -j " << policy_name_in << endl;
          outfile << "ip6tables -F " << policy_name_in << endl;
          outfile << "ip6tables -X " << policy_name_in << endl;
          outfile << "ip6tables -N " << policy_name_in << endl;
-
+         outfile << endl;
+         outfile << "ip6tables -D OUTPUT -j " << policy_name_out << endl;
          outfile << "ip6tables -F " << policy_name_out << endl;
          outfile << "ip6tables -X " << policy_name_out << endl;
          outfile << "ip6tables -N " << policy_name_out << endl;
+         outfile << "fi" << endl;
+         outfile << endl;
+         outfile << "if [[ $1 == \"up\" ]]; then" << endl;
 
          for (ACL a : m.from_device_acls) {
             outfile << "# ACL: " << a.name << " | Type: " << a.type << endl;
             for (ACE e : a.aces) {
+               outfile << endl;
                outfile << "## ACE: " << e.name << endl;
                ostringstream line;
                line << "ip6tables -A " << policy_name_out ;
@@ -467,11 +479,11 @@ namespace otbr {
                   line << " -p udp";
                }
 
-               if (strlen(e.matches.src_dnsname) > 0) {
+               if ((e.matches.src_dnsname != NULL) && (strlen(e.matches.src_dnsname) > 0)) {
                   line << " -s " << e.matches.src_dnsname;
                }
 
-               if (strlen(e.matches.dst_dnsname) > 0) {
+               if ((e.matches.dst_dnsname != NULL) && (strlen(e.matches.dst_dnsname) > 0)) {
                   line << " -d " << e.matches.dst_dnsname;
                }
 
@@ -497,52 +509,50 @@ namespace otbr {
             outfile << "# ACL: " << a.name << " | Type: " << a.type << endl;
             otbrLogInfo("To Device ACEs: %d", a.aces.size());
             for (ACE e : a.aces) {
-               otbrLogInfo("Here1");
+               outfile << endl;
                outfile << "## ACE: " << e.name << endl;
-               otbrLogInfo("Here2");
                ostringstream line;
-               otbrLogInfo("Here3");
                line << "ip6tables -A " << policy_name_in ;
-otbrLogInfo("Here4");
                if (e.matches.protocol == 6) {
                   line << " -p tcp";
                } else if (e.matches.protocol == 17) {
                   line << " -p udp";
                }
 
-               otbrLogInfo("Here5");
-
-               if (strlen(e.matches.src_dnsname) > 0) {
+               if ((e.matches.src_dnsname != NULL) && (strlen(e.matches.src_dnsname) > 0)) {
                   line << " -s " << e.matches.src_dnsname;
                }
-otbrLogInfo("Here6");
-               // if (strlen(e.matches.dst_dnsname) > 0) {
-               //    line << " -d " << e.matches.dst_dnsname;
-               // }
-otbrLogInfo("Here7");
+
+               if ((e.matches.dst_dnsname != NULL) && (strlen(e.matches.dst_dnsname) > 0)) {
+                  line << " -d " << e.matches.dst_dnsname;
+               }
+
                if (e.matches.dst_port > 0) {
                   line << " --dport " << e.matches.dst_port;
                }
-otbrLogInfo("Here8");
+
                if (e.matches.src_port > 0) {
                   line << " --sport " << e.matches.src_port;
                }
-otbrLogInfo("Here9");
+
                line << " -j ACCEPT";
-otbrLogInfo("Here10");
                outfile << line.str() << endl;
-               otbrLogInfo("Here11");
             }
          }
-
+         outfile << endl;
          outfile << "ip6tables -A INPUT -j " << policy_name_in << endl;
          outfile << "ip6tables -A OUTPUT -j " << policy_name_out << endl;
+         outfile << "fi" << endl;
 
          otbrLogInfo("Finished creating IpTables");
 
          outfile.close();
 
          otbrLogInfo("File Closed");
+
+         system("/mud/acl.sh up");
+
+         otbrLogInfo("Executed file");
 
          return 0;
       }
