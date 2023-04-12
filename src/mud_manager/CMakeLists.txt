@@ -33,4 +33,5 @@ add_library(otbr-mud-manager
 target_link_libraries(otbr-mud-manager PRIVATE
     otbr-common
     curlcpp
+    crypto
 )

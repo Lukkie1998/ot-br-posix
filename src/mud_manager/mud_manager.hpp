@@ -35,6 +35,11 @@
 #define OTBR_MUD_MANAGER_HPP_
 
 #include <string>
+#include <iostream>
+#include <ostream>
+#include <fstream>
+
+using std::fstream;
 
 // #include "../../third_party/cpp-httplib/repo/httplib.h"
 
@@ -62,9 +67,11 @@ namespace otbr {
                  * @returns A pointer to the MUD File Content
                  * 
                 */
-               int RetrieveFileFromServer(void);
+               int RetrieveFileFromServer(std::ostringstream *target, const char* url);
 
-               int ParseJSONContent(void);
+               fstream RetrieveFileFromServerToFile(const char* url);
+
+               int ParseMUDFile(void);
 
                 /**
                  * Verify the signature included in the MUD File.
@@ -72,6 +79,8 @@ namespace otbr {
                  * @returns 0 when signature is valid, 1 when signature is invalid and -1 when no signature is available in the MUD file.
                 */
                int VerifyFileSignature(void);
+
+               int ImplementMUDfile(void);
 
                /**
                  * Retrieve a MUD File from a server

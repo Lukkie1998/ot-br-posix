@@ -127,3 +127,5 @@ autoconf-config.h
 autoconf-config.h.in
 
 introspect.hpp
+
+build_old/
